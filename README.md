@@ -1,16 +1,16 @@
-# Boox - 桌面悬浮区域管理工具
+# Boox - Desktop Floating Area Management Tool
 
-Boox 是一款基于 Qt 开发的桌面悬浮区域管理工具,可以在 Windows 桌面上创建多个悬浮窗口,每个窗口映射到指定目录下的文件夹。
+Boox is a Qt-based desktop floating area management tool that allows you to create multiple floating windows on the Windows desktop, with each window mapping to a specific folder in a designated directory.
 
-## 功能特性
+## Features
 
-- ✅ **目录映射**: 自动扫描 `d:\boox` 目录,为每个一级文件夹创建对应的悬浮区域
-- ✅ **半透明设计**: 优雅的半透明悬浮窗口,完美融入桌面环境
-- ✅ **网格视图**: 文件和文件夹以图标网格形式展示,美观易用
-- ✅ **自适应宽度**: 窗口宽度根据文件夹名称长度自动调整
-- ✅ **悬浮窗口**: 可拖动、可调整大小的悬浮窗口,显示在桌面层级
-- ✅ **文件管理**: 支持拖放文件到悬浮区域,双击打开文件
-- ✅ **实时监控**: 自动监控 `d:\boox` 目录变化,实时创建/删除悬浮区域
-- ✅ **系统托盘**: 最小化到系统托盘,支持快捷操作
-- ⚙️ **跨平台**: 使用 CMake 编译,支持 Windows(Linux 支持开发中 )
+- ✅ **Directory Mapping**: Automatically scans the `d:\boox` directory and creates a corresponding floating area for each top-level folder.
+- ✅ **Translucent Design**: Elegant translucent floating windows that blend perfectly with the desktop environment.
+- ✅ **Grid View**: Files and folders are displayed in an icon grid, making them both aesthetic and easy to use.
+- ✅ **Adaptive Width**: Window width automatically adjusts based on the length of the folder name.
+- ✅ **Floating Windows**: Draggable and resizable floating windows that stay on top of the desktop layer.
+- ✅ **File Management**: Supports dragging and dropping files into floating areas and opening files with a double-click.
+- ✅ **Real-time Monitoring**: Automatically monitors changes in the `d:\boox` directory, creating or deleting floating areas in real-time.
+- ✅ **System Tray**: Minimizes to the system tray with support for quick operations.
+- ⚙️ **Cross-platform**: Compiled with CMake, supports Windows (Linux support is in development).
 
