@@ -2,6 +2,7 @@
 
 Boox is a Qt-based desktop floating area management tool that allows you to create multiple floating windows on the Windows desktop, with each window mapping to a specific folder in a designated directory.
 
+![snap1](docs/snap1.png) *snap1.png*
 ## Features
 
 - ✅ **Directory Mapping**: Automatically scans the `d:\boox` directory and creates a corresponding floating area for each top-level folder.
@@ -13,4 +14,3 @@ Boox is a Qt-based desktop floating area management tool that allows you to crea
 - ✅ **Real-time Monitoring**: Automatically monitors changes in the `d:\boox` directory, creating or deleting floating areas in real-time.
 - ✅ **System Tray**: Minimizes to the system tray with support for quick operations.
 - ⚙️ **Cross-platform**: Compiled with CMake, supports Windows (Linux support is in development).
-
