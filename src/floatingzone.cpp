@@ -597,9 +597,17 @@ void FloatingZone::showContextMenu(const QPoint &pos)
         this,
         [this]() { refreshFileList(); },
         [this](const QString &newFolderPath) {
+            // Update folder watcher: remove old path, add new path
+            if (folderWatcher && !folderPath.isEmpty()) {
+                folderWatcher->removePath(folderPath);
+            }
             folderPath = newFolderPath;
             zoneName = QFileInfo(newFolderPath).fileName();
+            if (folderWatcher) {
+                folderWatcher->addPath(folderPath);
+            }
             updateTitle();
+            refreshFileList();
             saveLayout();
         }
     );
@@ -614,9 +622,17 @@ void FloatingZone::onTitleDoubleClicked()
 
     FileOpsHandler::renameFolder(folderPath, zoneName, this,
         [this](const QString &newFolderPath) {
+            // Update folder watcher: remove old path, add new path
+            if (folderWatcher && !folderPath.isEmpty()) {
+                folderWatcher->removePath(folderPath);
+            }
             folderPath = newFolderPath;
             zoneName = QFileInfo(newFolderPath).fileName();
+            if (folderWatcher) {
+                folderWatcher->addPath(folderPath);
+            }
             updateTitle();
+            refreshFileList();
             saveLayout();
         }
     );
