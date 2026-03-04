@@ -15,6 +15,7 @@
 #include <QFontMetrics>
 #include <QFile>
 #include <QStringList>
+#include <QFileIconProvider>
 #include <QMenu>
 #include <QCloseEvent>
 #include <QJsonDocument>
@@ -540,6 +541,9 @@ void FloatingZone::refreshFileList()
         return;
     }
 
+    // Use QFileIconProvider for real system icons (supports .lnk, file types, etc.)
+    QFileIconProvider iconProvider;
+
     // Get all files and subdirectories
     QFileInfoList entries = dir.entryInfoList(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot,
                                               QDir::Name | QDir::DirsFirst);
@@ -549,12 +553,8 @@ void FloatingZone::refreshFileList()
         item->setData(Qt::UserRole, fileInfo.absoluteFilePath());
         item->setToolTip(fileInfo.absoluteFilePath());
 
-        // Set icon based on file type
-        if (fileInfo.isDir()) {
-            item->setIcon(style()->standardIcon(QStyle::SP_DirIcon));
-        } else {
-            item->setIcon(style()->standardIcon(QStyle::SP_FileIcon));
-        }
+        // Set real system icon for this file/folder/shortcut
+        item->setIcon(iconProvider.icon(fileInfo));
 
         fileList->addItem(item);
     }
