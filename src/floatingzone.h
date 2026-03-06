@@ -99,7 +99,10 @@ private:
     ClickableLabel *titleLabel;
     DraggableListWidget *fileList;
     QPushButton *viewModeButton;
+    QPushButton *closeButton;
+    QPushButton *lockButton;
     bool isGridMode;
+    bool isLocked;
     QFileSystemWatcher *folderWatcher;
 
     // For window dragging

@@ -38,6 +38,7 @@ FloatingZone::FloatingZone(const QString &name, const QString &folderPath, QWidg
     , resizingRight(false)
     , resizingBottom(false)
     , isGridMode(false)
+    , isLocked(false)
     , folderWatcher(nullptr)
 {
     // Set window flags for a frameless window that stays behind other windows
@@ -109,15 +110,33 @@ void FloatingZone::setupUI()
     connect(titleLabel, &ClickableLabel::doubleClicked, this, &FloatingZone::onTitleDoubleClicked);
     titleLayout->addWidget(titleLabel, 1);
 
+    // Shared button style (matches close button style)
+    auto makeButtonStyle = [](const QString &hoverBg) {
+        return QString(
+            "QPushButton { "
+            "  background-color: transparent; "
+            "  color: rgba(255, 255, 255, 150); "
+            "  border: none; "
+            "  padding: 0px; "
+            "  font-size: 14px; "
+            "  font-weight: bold; "
+            "}"
+            "QPushButton:hover { "
+            "  background-color: %1; "
+            "  color: white; "
+            "}"
+        ).arg(hoverBg);
+    };
+
     // Close button
-    QPushButton *closeButton = new QPushButton("×", titleBar);
+    closeButton = new QPushButton("×", titleBar);
     closeButton->setStyleSheet(
         "QPushButton { "
         "  background-color: transparent; "
         "  color: rgba(255, 255, 255, 150); "
         "  border: none; "
         "  padding: 0px; "
-        "  font-size: 20px; "
+        "  font-size: 18px; "
         "  font-weight: bold; "
         "}"
         "QPushButton:hover { "
@@ -132,23 +151,48 @@ void FloatingZone::setupUI()
 
     // View mode toggle button
     viewModeButton = new QPushButton("▦", titleBar);
-    viewModeButton->setStyleSheet(
-        "QPushButton { "
-        "  background-color: rgba(255, 255, 255, 50); "
-        "  color: white; "
-        "  border: none; "
-        "  padding: 2px 6px; "
-        "  font-size: 16px; "
-        "  font-weight: bold; "
-        "}"
-        "QPushButton:hover { "
-        "  background-color: rgba(255, 255, 255, 80); "
-        "}"
-    );
+    viewModeButton->setStyleSheet(makeButtonStyle("rgba(255, 255, 255, 80)"));
     viewModeButton->setFixedSize(24, 22);
     viewModeButton->setToolTip("切换视图模式");
     connect(viewModeButton, &QPushButton::clicked, this, &FloatingZone::toggleViewMode);
     titleLayout->addWidget(viewModeButton);
+
+    // Lock button (rightmost)
+    lockButton = new QPushButton("○", titleBar);
+    lockButton->setStyleSheet(makeButtonStyle("rgba(255, 200, 0, 100)"));
+    lockButton->setFixedSize(24, 22);
+    lockButton->setToolTip("锁定区域");
+    connect(lockButton, &QPushButton::clicked, this, [this, makeButtonStyle]() {
+        isLocked = !isLocked;
+        closeButton->setVisible(!isLocked);
+        viewModeButton->setVisible(!isLocked);
+        if (isLocked) {
+            lockButton->setText("●");
+            lockButton->setToolTip("解锁区域");
+            lockButton->setStyleSheet(
+                "QPushButton { "
+                "  background-color: rgba(255, 200, 0, 60); "
+                "  color: rgba(255, 200, 0, 220); "
+                "  border: none; "
+                "  padding: 0px; "
+                "  font-size: 14px; "
+                "  font-weight: bold; "
+                "}"
+                "QPushButton:hover { "
+                "  background-color: rgba(255, 200, 0, 100); "
+                "  color: white; "
+                "}"
+            );
+        } else {
+            lockButton->setText("○");
+            lockButton->setToolTip("锁定区域");
+            lockButton->setStyleSheet(makeButtonStyle("rgba(255, 200, 0, 100)"));
+        }
+        fileList->setAcceptDrops(!isLocked);
+        fileList->setDragEnabled(!isLocked);
+        setAcceptDrops(!isLocked);
+    });
+    titleLayout->addWidget(lockButton);
 
     mainLayout->addWidget(titleBar);
 
@@ -298,6 +342,11 @@ void FloatingZone::updateTitle()
 void FloatingZone::mousePressEvent(QMouseEvent *event)
 {
     if (event->button() == Qt::LeftButton) {
+        if (isLocked) {
+            event->accept();
+            return;
+        }
+
         QPoint pos = event->pos();
 
         // Check for resize areas (right edge, bottom edge, or corner)
@@ -491,6 +540,11 @@ void FloatingZone::showEvent(QShowEvent *event)
 
 void FloatingZone::closeEvent(QCloseEvent *event)
 {
+    if (isLocked) {
+        event->ignore();
+        return;
+    }
+
     // Save layout before closing
     saveLayout();
 
@@ -591,6 +645,8 @@ void FloatingZone::toggleViewMode()
 
 void FloatingZone::showContextMenu(const QPoint &pos)
 {
+    if (isLocked) return;
+
     ContextMenuBuilder::show(
         fileList, pos,
         folderPath, zoneName,
@@ -616,7 +672,7 @@ void FloatingZone::showContextMenu(const QPoint &pos)
 
 void FloatingZone::onTitleDoubleClicked()
 {
-    if (folderPath.isEmpty()) {
+    if (isLocked || folderPath.isEmpty()) {
         return;
     }
 

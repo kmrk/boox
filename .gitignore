@@ -13,3 +13,5 @@ build/
 *.lib
 *.o
 *.obj
+.clj-kondo
+.lsp
